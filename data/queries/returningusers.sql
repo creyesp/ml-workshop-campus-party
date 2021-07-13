@@ -18,12 +18,12 @@ CREATE OR REPLACE VIEW
     user_pseudo_id,
     user_first_engagement,
     user_last_engagement,
-    EXTRACT(MONTH FROM TIMESTAMP_MICROS(user_first_engagement)) AS month,
+    EXTRACT(MONTH     FROM TIMESTAMP_MICROS(user_first_engagement)) AS month,
     EXTRACT(DAYOFYEAR FROM TIMESTAMP_MICROS(user_first_engagement)) AS julianday,
     EXTRACT(DAYOFWEEK FROM TIMESTAMP_MICROS(user_first_engagement)) AS dayofweek,
-    (user_first_engagement + 86400000000) AS ts_24hr_after_first_engagement,
-    IF (user_last_engagement < (user_first_engagement + 86400000000), 1, 0) AS churned,
-    IF (user_last_engagement <= (user_first_engagement + 600000000), 1, 0) AS bounced,
+    TIME_ADD(user_first_engagement, INTERVAL 24 HOUR) ts_24hr_after_first_engagement,
+    IF (user_last_engagement < TIME_ADD(user_first_engagement, INTERVAL 24 HOUR), 1, 0) AS churned,
+    IF (user_last_engagement <= TIME_ADD(user_first_engagement, INTERVAL 10 MINUTE), 1, 0) AS bounced,
   FROM
     firstlasttouch
   GROUP BY

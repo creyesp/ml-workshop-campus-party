@@ -1,4 +1,5 @@
 # Select user data only from first 24 hr of using the app
+# definition of events fro games https://support.google.com/analytics/answer/9267565
 # Other posible events:
 #  ad_reward
 #  app_clear_data
