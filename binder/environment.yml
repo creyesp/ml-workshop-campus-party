@@ -2,7 +2,7 @@ name: meetup_uy
 channels:
   - conda-forge
 dependencies:
-- pip=21.0.1
+  - pip=21.0.1
   - pip:
     - notebook==6.4.0
     - ipywidgets==7.6.3
