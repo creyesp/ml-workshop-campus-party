@@ -2,6 +2,7 @@ name: meetup_uy
 channels:
   - conda-forge
 dependencies:
+- pip=21.0.1
   - pip:
     - notebook==6.4.0
     - ipywidgets==7.6.3
@@ -14,3 +15,6 @@ dependencies:
     - xgboost==1.4.2
     - lightgbm==3.2.1
     - catboost==0.26
+    - google-cloud-bigquery==2.21.0
+    - pyarrow==4.0.1
+    - pandas-profiling[notebook]==3.0.0
