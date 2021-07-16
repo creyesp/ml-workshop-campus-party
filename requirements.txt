@@ -12,3 +12,5 @@ catboost==0.26
 google-cloud-bigquery==2.21.0
 pyarrow==4.0.1
 pandas-profiling[notebook]==3.0.0
+optuna==optuna-2.8.0
+git+https://github.com/SeldonIO/MLServer.git

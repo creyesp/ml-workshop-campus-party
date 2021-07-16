@@ -130,3 +130,6 @@ dmypy.json
 
 # Joblib models
 *.joblib
+
+# PyCharm
+.idea/
