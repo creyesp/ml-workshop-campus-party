@@ -4,6 +4,17 @@ TRANSFORM(
 --   EXTRACT(DAYOFYEAR from TIMESTAMP_MILLIS(user_first_engagement)) as julianday,
 --   EXTRACT(DAYOFWEEK from TIMESTAMP_MILLIS(user_first_engagement)) as dayofweek,
 --   EXTRACT(HOUR from TIMESTAMP_MILLIS(user_first_engagement)) as hour,
+  IFNULL(cnt_user_engagement,          0) AS cnt_user_engagement,
+  IFNULL(cnt_level_start_quickplay,    0) AS cnt_level_start_quickplay,
+  IFNULL(cnt_level_end_quickplay,      0) AS cnt_level_end_quickplay,
+  IFNULL(cnt_level_complete_quickplay, 0) AS cnt_level_complete_quickplay,
+  IFNULL(cnt_level_reset_quickplay,    0) AS cnt_level_reset_quickplay,
+  IFNULL(cnt_post_score,               0) AS cnt_post_score,
+  IFNULL(cnt_spend_virtual_currency,   0) AS cnt_spend_virtual_currency,
+  IFNULL(cnt_ad_reward,                0) AS cnt_ad_reward,
+  IFNULL(cnt_challenge_a_friend,       0) AS cnt_challenge_a_friend,
+  IFNULL(cnt_completed_5_levels,       0) AS cnt_completed_5_levels,
+  IFNULL(cnt_use_extra_steps,          0) AS cnt_use_extra_steps,
   * EXCEPT(user_first_engagement, user_pseudo_id)
 )
 OPTIONS(

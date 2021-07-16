@@ -6,9 +6,6 @@ user_returning AS
     user_pseudo_id,
     user_first_engagement,
     user_last_engagement,
-    EXTRACT(MONTH     FROM user_first_engagement) AS month,
-    EXTRACT(DAYOFYEAR FROM user_first_engagement) AS julianday,
-    EXTRACT(DAYOFWEEK FROM user_first_engagement) AS dayofweek,
     TIMESTAMP_ADD(user_first_engagement, INTERVAL 24 HOUR) ts_after_first_engagement,
     IF (user_first_engagement > TIMESTAMP_SUB(max_ts_events, INTERVAL 24*2 HOUR), 0, 1) AS is_enable,
     IF (user_last_engagement <= TIMESTAMP_ADD(user_first_engagement, INTERVAL 10 MINUTE), 1, 0) AS bounced,
@@ -26,7 +23,7 @@ user_returning AS
         event_name="user_engagement"
     )
 ),
-user_demographics AS 
+user_device AS 
   (
     SELECT
       user_pseudo_id,
@@ -80,35 +77,30 @@ user_behavior_agg AS
 SELECT
   ur.user_first_engagement,
   ur.user_pseudo_id,
-  CASE(ABS(MOD(FARM_FINGERPRINT(CAST(ur.user_pseudo_id as STRING)), 10)))
-    WHEN 9 THEN 'testing'
-    WHEN 8 THEN 'validation'
-    ELSE 'training' 
-  END AS split_group,
   ur.is_enable,
   ur.bounced,
   ud.country_name,
   ud.device_os,
   ud.device_lang,
-  IFNULL(ub.cnt_user_engagement,          0) AS cnt_user_engagement,
-  IFNULL(ub.cnt_level_start_quickplay,    0) AS cnt_level_start_quickplay,
-  IFNULL(ub.cnt_level_end_quickplay,      0) AS cnt_level_end_quickplay,
-  IFNULL(ub.cnt_level_complete_quickplay, 0) AS cnt_level_complete_quickplay,
-  IFNULL(ub.cnt_level_reset_quickplay,    0) AS cnt_level_reset_quickplay,
-  IFNULL(ub.cnt_post_score,               0) AS cnt_post_score,
-  IFNULL(ub.cnt_spend_virtual_currency,   0) AS cnt_spend_virtual_currency,
-  IFNULL(ub.cnt_ad_reward,                0) AS cnt_ad_reward,
-  IFNULL(ub.cnt_challenge_a_friend,       0) AS cnt_challenge_a_friend,
-  IFNULL(ub.cnt_completed_5_levels,       0) AS cnt_completed_5_levels,
-  IFNULL(ub.cnt_use_extra_steps,          0) AS cnt_use_extra_steps,
+  ub.cnt_user_engagement,
+  ub.cnt_level_start_quickplay,
+  ub.cnt_level_end_quickplay,
+  ub.cnt_level_complete_quickplay,
+  ub.cnt_level_reset_quickplay,
+  ub.cnt_post_score,
+  ub.cnt_spend_virtual_currency,
+  ub.cnt_ad_reward,
+  ub.cnt_challenge_a_friend,
+  ub.cnt_completed_5_levels,
+  ub.cnt_use_extra_steps,
   ur.churned
 FROM
   user_returning as ur
-LEFT OUTER JOIN
-  user_demographics as ud
+LEFT JOIN
+  user_device as ud
 ON 
   ur.user_pseudo_id = ud.user_pseudo_id
-LEFT OUTER JOIN 
+LEFT JOIN 
   user_behavior_agg as ub
 ON
   ur.user_pseudo_id = ub.user_pseudo_id

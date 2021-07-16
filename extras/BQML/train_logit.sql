@@ -40,3 +40,4 @@ FROM
 WHERE
   is_enable = 1
   AND bounced = 0
+  AND ABS(MOD(FARM_FINGERPRINT(CAST(ur.user_pseudo_id as STRING)), 10)) != 9
