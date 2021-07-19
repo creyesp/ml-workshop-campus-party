@@ -1,7 +1,7 @@
 CATEGORICAL_COLUMNS = [
     "country_name",
     "device_os",
-    "device_lang",
+    #"device_lang",
 ]
 NUMERICAL_COLUMNS = [
     "cnt_user_engagement",
@@ -21,6 +21,7 @@ IGNORE_COLUMNS = [
     "user_pseudo_id",
     "is_enable",
     "bounced",
+    "device_lang",
 ]
 LABEL_COLUMN = "churned"
 ALL_COLUMNS = CATEGORICAL_COLUMNS + NUMERICAL_COLUMNS + [LABEL_COLUMN]

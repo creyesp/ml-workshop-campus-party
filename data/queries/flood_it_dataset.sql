@@ -1,4 +1,4 @@
--- CREATE OR REPLACE TABLE workshop.floot_it_dataset as
+-- CREATE OR REPLACE TABLE workshop.flood_it_dataset as
 WITH 
 user_returning AS 
 (

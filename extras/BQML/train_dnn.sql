@@ -1,4 +1,4 @@
-CREATE OR REPLACE MODEL `peya-data-analyt-factory-stg.workshop.churn_dnn`
+CREATE OR REPLACE MODEL workshop.churn_dnn
 
 TRANSFORM(
 --   EXTRACT(MONTH from TIMESTAMP_MILLIS(user_first_engagement)) as month,
@@ -14,5 +14,9 @@ OPTIONS(
 
 SELECT 
   * 
-FROM 
-  `peya-data-analyt-factory-stg.workshop.train`
+FROM
+  workshop.flood_it_dataset
+WHERE
+  is_enable = 1
+  AND bounced = 0
+  AND ABS(MOD(FARM_FINGERPRINT(CAST(user_pseudo_id as STRING)), 10)) != 9
