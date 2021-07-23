@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Joblib models
+*.joblib
+
+# PyCharm
+.idea/
