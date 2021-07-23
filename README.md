@@ -1,4 +1,5 @@
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/creyesp/ml-workshop-campus-party/workshop-solution)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/creyesp/ml-workshop-campus-party/main)
+
 
 
 # ML Workshop
