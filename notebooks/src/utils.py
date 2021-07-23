@@ -28,7 +28,6 @@ def plot_metric_curves(model, x, y, ax=None):
         f, ax = plt.subplots(2, 2, figsize=(10, 10))
         ax = ax.flatten()
     metrics.plot_confusion_matrix(model, x, y, ax=ax[0])
-    # metrics.plot_det_curve(model, x, y, ax=ax[1])
     precission_recall_vs_thr(model, x, y, ax=ax[1])
     metrics.plot_precision_recall_curve(model, x, y, ax=ax[2])
     metrics.plot_roc_curve(model, x, y, ax=ax[3])
@@ -39,4 +38,5 @@ def plot_metric_curves(model, x, y, ax=None):
     ax[1].grid(True, alpha=0.5, linestyle="--")
     ax[2].grid(True, alpha=0.5, linestyle="--")
     ax[3].grid(True, alpha=0.5, linestyle="--")
+
     return ax
