@@ -5,6 +5,8 @@ dependencies:
   - python=3.9
   - pip=21.0.1
   - pip:
+    - jinja2==3.0.2
+    - pydantic==1.10.13
     - notebook==6.4.0
     - ipywidgets==7.6.3
     - widgetsnbextension==3.5.1
