@@ -1,8 +1,0 @@
-{
-    "name": "flood-it-churned",
-    "implementation": "mlserver_sklearn.SKLearnModel",
-    "parameters": {
-        "uri": "../notebooks/models/gb_model_full.joblib",
-        "version": "v0.1.0"
-    }
-}

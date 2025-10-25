@@ -1,4 +1,0 @@
-{
-    "name": "content-type-example",
-    "implementation": "runtime.EchoRuntime"
-}
