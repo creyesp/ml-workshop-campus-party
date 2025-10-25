@@ -1,0 +1,8 @@
+{
+    "name": "flood-it-churned",
+    "implementation": "custom_sklearn_handler.CustomSklearnModel",
+    "parameters": {
+        "uri": "../notebooks/models/xgb_model_full.joblib",
+        "version": "v0.1.0"
+    }
+}

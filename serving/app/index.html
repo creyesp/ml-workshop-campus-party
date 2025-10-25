@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictor de Abandono de Usuarios - Flood It Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .predict-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .predict-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            height: fit-content;
+        }
+
+        .results-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .prediction-result {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .will-churn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .wont-churn {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+        }
+
+        .probability-bars {
+            margin-top: 20px;
+        }
+
+        .probability-item {
+            margin-bottom: 15px;
+        }
+
+        .probability-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .probability-bar {
+            height: 10px;
+            background: #e1e5e9;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .churn-prob {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+        }
+
+        .no-churn-prob {
+            background: linear-gradient(90deg, #51cf66, #40c057);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #4facfe;
+            padding-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .info-card {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .info-card h4 {
+            color: #1976d2;
+            margin-bottom: 5px;
+        }
+
+        .info-card p {
+            color: #555;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Predictor de Abandono de Usuarios</h1>
+            <p>Predice si un usuario abandonará el juego Flood It usando Machine Learning</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2 class="section-title">📊 Datos del Usuario</h2>
+                
+                <div class="info-card">
+                    <h4>ℹ️ Información</h4>
+                    <p>Complete todos los campos para obtener una predicción precisa sobre la probabilidad de abandono del usuario.</p>
+                </div>
+
+                <form id="predictionForm">
+                    <div class="form-grid">
+                        <!-- Información básica del usuario -->
+                        <div class="form-group">
+                            <label for="user_pseudo_id">🆔 ID del Usuario</label>
+                            <input type="text" id="user_pseudo_id" name="user_pseudo_id" 
+                                   placeholder="Ej: ABC123DEF456" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="user_first_engagement">📅 Primera Interacción</label>
+                            <input type="datetime-local" id="user_first_engagement" name="user_first_engagement" required>
+                        </div>
+
+                        <!-- Información del dispositivo -->
+                        <div class="form-group">
+                            <label for="device_os">📱 Sistema Operativo</label>
+                            <select id="device_os" name="device_os" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="ANDROID">Android</option>
+                                <option value="IOS">iOS</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="device_lang">🌐 Idioma del Dispositivo</label>
+                            <select id="device_lang" name="device_lang" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="en-us">English (US)</option>
+                                <option value="es-es">Español (España)</option>
+                                <option value="es-mx">Español (México)</option>
+                                <option value="fr-fr">Français</option>
+                                <option value="de-de">Deutsch</option>
+                                <option value="it-it">Italiano</option>
+                                <option value="pt-br">Português (Brasil)</option>
+                                <option value="ja-jp">日本語</option>
+                                <option value="ko-kr">한국어</option>
+                                <option value="zh-cn">中文</option>
+                                <option value="ru-ru">Русский</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="country_name">🏳️ País</label>
+                            <select id="country_name" name="country_name" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="United States">Estados Unidos</option>
+                                <option value="Spain">España</option>
+                                <option value="Mexico">México</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Colombia">Colombia</option>
+                                <option value="Brazil">Brasil</option>
+                                <option value="France">Francia</option>
+                                <option value="Germany">Alemania</option>
+                                <option value="Italy">Italia</option>
+                                <option value="Japan">Japón</option>
+                                <option value="South Korea">Corea del Sur</option>
+                                <option value="China">China</option>
+                                <option value="United Kingdom">Reino Unido</option>
+                                <option value="Canada">Canadá</option>
+                                <option value="Australia">Australia</option>
+                                <option value="India">India</option>
+                            </select>
+                        </div>
+
+                        <!-- Métricas de juego -->
+                        <div class="form-group">
+                            <label for="cnt_user_engagement">👤 Interacciones del Usuario</label>
+                            <input type="number" id="cnt_user_engagement" name="cnt_user_engagement" 
+                                   min="0" max="1000" value="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_level_start_quickplay">▶️ Niveles Iniciados (Quickplay)</label>
+                            <input type="number" id="cnt_level_start_quickplay" name="cnt_level_start_quickplay" 
+                                   min="0" max="1000" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_level_end_quickplay">🏁 Niveles Terminados (Quickplay)</label>
+                            <input type="number" id="cnt_level_end_quickplay" name="cnt_level_end_quickplay" 
+                                   min="0" max="1000" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_level_complete_quickplay">✅ Niveles Completados (Quickplay)</label>
+                            <input type="number" id="cnt_level_complete_quickplay" name="cnt_level_complete_quickplay" 
+                                   min="0" max="1000" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_level_reset_quickplay">🔄 Niveles Reiniciados (Quickplay)</label>
+                            <input type="number" id="cnt_level_reset_quickplay" name="cnt_level_reset_quickplay" 
+                                   min="0" max="1000" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_post_score">🏆 Puntuaciones Publicadas</label>
+                            <input type="number" id="cnt_post_score" name="cnt_post_score" 
+                                   min="0" max="1000" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_spend_virtual_currency">💰 Gasto de Moneda Virtual</label>
+                            <input type="number" id="cnt_spend_virtual_currency" name="cnt_spend_virtual_currency" 
+                                   min="0" max="100" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_ad_reward">📺 Recompensas por Anuncios</label>
+                            <input type="number" id="cnt_ad_reward" name="cnt_ad_reward" 
+                                   min="0" max="50" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_challenge_a_friend">👥 Desafíos a Amigos</label>
+                            <input type="number" id="cnt_challenge_a_friend" name="cnt_challenge_a_friend" 
+                                   min="0" max="20" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_completed_5_levels">🌟 Completó 5 Niveles</label>
+                            <input type="number" id="cnt_completed_5_levels" name="cnt_completed_5_levels" 
+                                   min="0" max="10" value="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cnt_use_extra_steps">🦶 Uso de Pasos Extra</label>
+                            <input type="number" id="cnt_use_extra_steps" name="cnt_use_extra_steps" 
+                                   min="0" max="100" value="0" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="predict-btn" id="predictBtn">
+                        🔮 Predecir Abandono
+                    </button>
+                </form>
+            </div>
+
+            <div class="results-section">
+                <h3>📈 Resultados de la Predicción</h3>
+                
+                <div id="resultsContainer">
+                    <div class="info-card">
+                        <h4>🎯 ¿Cómo funciona?</h4>
+                        <p>El modelo analiza el comportamiento del usuario y predice la probabilidad de abandono usando algoritmos de Machine Learning entrenados con datos históricos del juego.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h4>📊 Métricas importantes</h4>
+                        <p>Los campos más importantes son las interacciones del usuario, niveles completados y uso de funciones premium del juego.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración del formulario
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer fecha por defecto
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('user_first_engagement').value = now.toISOString().slice(0, 16);
+            
+            // Generar ID de usuario aleatorio
+            document.getElementById('user_pseudo_id').value = generateRandomId();
+        });
+
+        function generateRandomId() {
+            return 'USER_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        // Manejo del formulario
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userData = Object.fromEntries(formData);
+            
+            // Agregar campos fijos
+            userData.is_enable = 1;
+            userData.bounced = 0;
+            
+            // Convertir números
+            const numericFields = [
+                'cnt_user_engagement', 'cnt_level_start_quickplay', 'cnt_level_end_quickplay',
+                'cnt_level_complete_quickplay', 'cnt_level_reset_quickplay', 'cnt_post_score',
+                'cnt_spend_virtual_currency', 'cnt_ad_reward', 'cnt_challenge_a_friend',
+                'cnt_completed_5_levels', 'cnt_use_extra_steps'
+            ];
+            
+            numericFields.forEach(field => {
+                userData[field] = parseInt(userData[field]) || 0;
+            });
+            
+            // Formatear fecha
+            userData.user_first_engagement = new Date(userData.user_first_engagement).toISOString();
+            
+            console.log('Datos del usuario:', userData);
+            
+            await makePrediction(userData);
+        });
+
+        async function makePrediction(userData) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const predictBtn = document.getElementById('predictBtn');
+            
+            // Mostrar loading
+            predictBtn.disabled = true;
+            predictBtn.textContent = '🔄 Prediciendo...';
+            
+            resultsContainer.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analizando comportamiento del usuario...</p>
+                </div>
+            `;
+            
+            try {
+                const payload = {
+                    inputs: [{
+                        name: "json_data",
+                        shape: [1],
+                        datatype: "BYTES",
+                        data: [userData]
+                    }]
+                };
+                
+                console.log('Enviando payload:', JSON.stringify(payload, null, 2));
+                
+                // Use CORS proxy server to avoid CORS issues
+                const apiUrl = 'http://localhost:3000/v2/models/flood-it-churned/infer';
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('Respuesta del modelo:', result);
+                
+                displayResults(result);
+                
+            } catch (error) {
+                console.error('Error en la predicción:', error);
+                displayError(error.message);
+            } finally {
+                predictBtn.disabled = false;
+                predictBtn.textContent = '🔮 Predecir Abandono';
+            }
+        }
+
+        function displayResults(result) {
+            const prediction = result.outputs[0].data[0];
+            const probabilities = result.outputs[1].data;
+            const noChurnProb = (probabilities[0] * 100).toFixed(1);
+            const churnProb = (probabilities[1] * 100).toFixed(1);
+            
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            const resultClass = prediction === 1 ? 'will-churn' : 'wont-churn';
+            const resultText = prediction === 1 ? 
+                '⚠️ El usuario probablemente ABANDONARÁ' : 
+                '✅ El usuario probablemente CONTINUARÁ';
+            
+            resultsContainer.innerHTML = `
+                <div class="prediction-result ${resultClass}">
+                    ${resultText}
+                </div>
+                
+                <div class="probability-bars">
+                    <div class="probability-item">
+                        <div class="probability-label">
+                            <span>🟢 No Abandonará</span>
+                            <span>${noChurnProb}%</span>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="probability-fill no-churn-prob" style="width: ${noChurnProb}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="probability-item">
+                        <div class="probability-label">
+                            <span>🔴 Abandonará</span>
+                            <span>${churnProb}%</span>
+                        </div>
+                        <div class="probability-bar">
+                            <div class="probability-fill churn-prob" style="width: ${churnProb}%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card" style="margin-top: 20px;">
+                    <h4>💡 Interpretación</h4>
+                    <p>${getInterpretation(prediction, parseFloat(churnProb))}</p>
+                </div>
+            `;
+        }
+
+        function getInterpretation(prediction, churnProb) {
+            if (prediction === 1) {
+                if (churnProb > 80) {
+                    return "Alto riesgo de abandono. Se recomienda intervención inmediata con ofertas especiales o contenido personalizado.";
+                } else if (churnProb > 60) {
+                    return "Riesgo moderado de abandono. Considere estrategias de retención como notificaciones personalizadas.";
+                } else {
+                    return "Riesgo bajo de abandono, pero manténgase atento al comportamiento del usuario.";
+                }
+            } else {
+                if (churnProb < 20) {
+                    return "Usuario muy comprometido. Excelente candidato para programas de referidos o contenido premium.";
+                } else {
+                    return "Usuario estable con buen engagement. Continúe proporcionando contenido de calidad.";
+                }
+            }
+        }
+
+        function displayError(message) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = `
+                <div class="error">
+                    <h4>❌ Error en la Predicción</h4>
+                    <p><strong>Detalles:</strong> ${message}</p>
+                    <p><strong>Soluciones:</strong></p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Verificar que el servidor MLServer esté ejecutándose en http://localhost:8080</li>
+                        <li>Ejecutar <code>./start_server.sh</code> en el directorio serving/</li>
+                        <li>Verificar que el modelo esté cargado correctamente</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Función para llenar datos de ejemplo
+        function fillExampleData() {
+            document.getElementById('user_pseudo_id').value = 'EXAMPLE_USER_123';
+            document.getElementById('device_os').value = 'ANDROID';
+            document.getElementById('device_lang').value = 'en-us';
+            document.getElementById('country_name').value = 'United States';
+            document.getElementById('cnt_user_engagement').value = '15';
+            document.getElementById('cnt_level_start_quickplay').value = '5';
+            document.getElementById('cnt_level_end_quickplay').value = '3';
+            document.getElementById('cnt_level_complete_quickplay').value = '2';
+            document.getElementById('cnt_level_reset_quickplay').value = '1';
+            document.getElementById('cnt_post_score').value = '2';
+            document.getElementById('cnt_spend_virtual_currency').value = '0';
+            document.getElementById('cnt_ad_reward').value = '1';
+            document.getElementById('cnt_challenge_a_friend').value = '0';
+            document.getElementById('cnt_completed_5_levels').value = '0';
+            document.getElementById('cnt_use_extra_steps').value = '0';
+        }
+
+        // Agregar botón de ejemplo
+        document.addEventListener('DOMContentLoaded', function() {
+            const exampleBtn = document.createElement('button');
+            exampleBtn.type = 'button';
+            exampleBtn.className = 'predict-btn';
+            exampleBtn.innerHTML = '📝 Llenar Datos de Ejemplo';
+            exampleBtn.style.background = 'linear-gradient(135deg, #ffeaa7, #fdcb6e)';
+            exampleBtn.style.marginTop = '10px';
+            exampleBtn.onclick = fillExampleData;
+            
+            const form = document.getElementById('predictionForm');
+            form.appendChild(exampleBtn);
+        });
+    </script>
+</body>
+</html>
