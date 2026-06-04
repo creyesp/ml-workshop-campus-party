@@ -61,6 +61,8 @@ DATA_HASHES: dict[str, str] = {
     "features_v4": "d652d10455fc2024cb7cd726d805cff2c7b6f90c790ef81a992d3c5a58126f6e",
     # Markov / sequence-order features v5 (data/queries/flood_it_features_v5_markov.sql).
     "features_v5": "07fb27e1b2b79732aadff815e59b91a4763a9a922e14614e3f9829a3a33f4c90",
+    # Difficulty / progression features v6 (data/queries/flood_it_features_v6_difficulty.sql).
+    "features_v6": "29715db643d243163d3eee0bf5dff2cbd21651d54c36d6843b84dd0bb9ee3fe8",
 }
 
 # --- Feature set v2 --------------------------------------------------------
@@ -167,3 +169,25 @@ V5_BIGRAM_FLAGS = [
 ]
 V5_MARKOV_COLUMNS = V5_PROB_MARKOV + V5_BIGRAM_FLAGS
 V5_NUMERICAL_COLUMNS = V3_NUMERICAL_COLUMNS + V5_MARKOV_COLUMNS
+
+# --- Feature set v6: difficulty / progression -------------------------------
+# Built on v3 (the champion; v4/v5 were negative). New signal: level FAIL/RETRY
+# (frustration), max level reached (progression), score performance. max_level /
+# score nulls ("no level/score events in window") imputed to 0.
+V6_RAW_DIFFICULTY = [
+    "diff_cnt_fail",
+    "diff_cnt_retry",
+    "diff_cnt_level_up",
+    "diff_max_level",
+    "diff_num_distinct_levels",
+    "diff_max_score",
+    "diff_mean_score",
+    "diff_cnt_scores",
+]
+V6_DERIVED_DIFFICULTY = [
+    "diff_fail_rate",         # fails / level starts
+    "diff_retry_rate",        # retries / level starts
+    "diff_fail_to_complete",  # fails / level completes (frustration)
+]
+V6_DIFFICULTY_COLUMNS = V6_RAW_DIFFICULTY + V6_DERIVED_DIFFICULTY
+V6_NUMERICAL_COLUMNS = V3_NUMERICAL_COLUMNS + V6_DIFFICULTY_COLUMNS
