@@ -53,4 +53,28 @@ DATA_HASHES: dict[str, str] = {
     "train": "1dea2802d7db3fafa823e9a904ed1b569635d7911807039b7382245d7008ce14",
     "test": "57a5adf560c50432caa13fb1a5a9fce913603e4fde77c2cb2ed889282b9723bb",
     "raw": "300b88bb463166e5d4818a0b3284b0344b8ef181d0149d2f1b5b6f3105190cf0",
+    # Engineered features v2 (data/queries/flood_it_features_v2.sql), keyed by user.
+    "features_v2": "d07811a83dd04960808159052fc3f2f13f83cdbd3712389ddf533f36d6275aa2",
 }
+
+# --- Feature set v2 --------------------------------------------------------
+# New BigQuery-derived features (num_sessions dropped: all-zero in this export).
+# min_to_first_* nulls ("never did it in window") are imputed to NEVER_SENTINEL.
+NEVER_SENTINEL = 1441  # minutes: one past the 24h observation window
+V2_RAW_NUMERICAL = [
+    "cnt_events_total",
+    "cnt_events_first_1h",
+    "cnt_events_first_6h",
+    "num_distinct_event_types",
+    "min_to_first_level_start",
+    "min_to_first_post_score",
+    "min_to_first_level_complete",
+]
+# Ratio/derived features computed in load_v2 from existing + v2 counts.
+V2_DERIVED_NUMERICAL = [
+    "completion_rate",
+    "reset_rate",
+    "early_fraction_1h",
+    "events_per_type",
+]
+V2_NUMERICAL_COLUMNS = NUMERICAL_COLUMNS + V2_RAW_NUMERICAL + V2_DERIVED_NUMERICAL

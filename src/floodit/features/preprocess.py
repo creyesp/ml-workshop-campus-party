@@ -17,6 +17,35 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from floodit.config import CATEGORICAL_COLUMNS, IGNORE_COLUMNS, NUMERICAL_COLUMNS
 
 
+def make_preprocessor(numerical_columns, categorical_columns) -> ColumnTransformer:
+    """Preprocessor over an explicit column set (used to compare feature sets).
+
+    Same transforms as ``build_preprocessor`` but the numeric/categorical column
+    lists are passed in, and any other column is dropped via remainder.
+    """
+    numeric_transformer = Pipeline(
+        steps=[
+            ("imputer", SimpleImputer(strategy="constant", fill_value=0)),
+            ("scaler", StandardScaler()),
+        ]
+    )
+    categorical_transformer = Pipeline(
+        steps=[
+            ("imputer", SimpleImputer(strategy="most_frequent")),
+            # Dense output so tree models that reject sparse (HistGB) work too.
+            ("onehot", OneHotEncoder(categories="auto", handle_unknown="ignore",
+                                     sparse_output=False)),
+        ]
+    )
+    return ColumnTransformer(
+        transformers=[
+            ("numeric_features", numeric_transformer, list(numerical_columns)),
+            ("categorical_features", categorical_transformer, list(categorical_columns)),
+        ],
+        remainder="drop",
+    )
+
+
 def build_preprocessor(numeric: bool = True, categorical: bool = True) -> ColumnTransformer:
     numeric_transformer = Pipeline(
         steps=[
