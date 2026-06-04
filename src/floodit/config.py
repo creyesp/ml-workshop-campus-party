@@ -59,6 +59,8 @@ DATA_HASHES: dict[str, str] = {
     "features_v3": "0969ed265b5d903b04782cd28adf9101d5c14f8bf6af5645810c161bbfdcd2df",
     # Navigation-sequence features v4 (data/queries/flood_it_features_v4_navigation.sql).
     "features_v4": "d652d10455fc2024cb7cd726d805cff2c7b6f90c790ef81a992d3c5a58126f6e",
+    # Markov / sequence-order features v5 (data/queries/flood_it_features_v5_markov.sql).
+    "features_v5": "07fb27e1b2b79732aadff815e59b91a4763a9a922e14614e3f9829a3a33f4c90",
 }
 
 # --- Feature set v2 --------------------------------------------------------
@@ -126,3 +128,42 @@ V4_DERIVED_NAV = [
     "nav_reached_steps",     # 1 if hit out-of-steps/extra-steps
 ]
 V4_NUMERICAL_COLUMNS = V3_NUMERICAL_COLUMNS + V4_RAW_NAV + V4_DERIVED_NAV
+
+# --- Feature set v5: Markov / sequence-ORDER (first-order transition probs) --
+# v4 (navigation COUNTS) added nothing. v5 tests whether transition ORDER carries
+# orthogonal signal: per-source-category transition PROBABILITIES P(cur|prev) =
+# count(prev>cur) / count(prev>*), built in load_v5 from raw edge counts. These
+# are scale-free (probabilities), unlike the v4 counts. A few 2-gram presence
+# flags are added. Users with no transitions in window -> all-zero (no order).
+# Raw edge-count columns from the query (denominators + numerators).
+V5_RAW_MARKOV = [
+    "mk_total_transitions",
+    "mk_from_game", "mk_from_game_over", "mk_from_menu",
+    "mk_from_level_select", "mk_from_steps",
+    "mk_game__game", "mk_game__game_over", "mk_game__menu",
+    "mk_game__steps", "mk_game__shop", "mk_game__level_select",
+    "mk_game_over__game", "mk_game_over__menu", "mk_game_over__level_select",
+    "mk_game_over__shop",
+    "mk_menu__game", "mk_menu__level_select",
+    "mk_level_select__game",
+    "mk_steps__shop", "mk_steps__game",
+]
+# First-order Markov transition PROBABILITIES P(cur|prev) (the ORDER signal).
+V5_PROB_MARKOV = [
+    "p_game__game", "p_game__game_over", "p_game__menu",
+    "p_game__steps", "p_game__shop", "p_game__level_select",
+    "p_game_over__game", "p_game_over__menu", "p_game_over__level_select",
+    "p_game_over__shop",
+    "p_menu__game", "p_menu__level_select",
+    "p_level_select__game",
+    "p_steps__shop", "p_steps__game",
+]
+# 2-gram presence flags (did this directed transition occur at all in window).
+V5_BIGRAM_FLAGS = [
+    "ng_game_to_game_over",   # bounced from play to game-over
+    "ng_game_over_to_game",   # retried after game-over (re-engagement)
+    "ng_steps_to_shop",       # out-of-steps -> shop (monetization funnel)
+    "ng_game_to_shop",        # play -> shop
+]
+V5_MARKOV_COLUMNS = V5_PROB_MARKOV + V5_BIGRAM_FLAGS
+V5_NUMERICAL_COLUMNS = V3_NUMERICAL_COLUMNS + V5_MARKOV_COLUMNS
