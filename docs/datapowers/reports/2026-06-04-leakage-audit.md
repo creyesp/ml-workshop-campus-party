@@ -48,9 +48,13 @@ Tripwire thresholds: directed AUC ≥ 0.85, or ablated PR-AUC ≤ prevalence+0.0
 - No single-feature ablation collapses the model: the largest Δ is 0.005, and the
   ablated PR-AUC never falls to the prevalence floor. The model's ~0.32 PR-AUC is
   **distributed across features**, not propped up by one leaky column.
-- `cnt_user_engagement` is the strongest single signal, consistent with the
-  honest story (engaged users churn less) rather than leakage, because it is
-  time-boxed to the observation window.
+- `cnt_user_engagement` is the strongest single signal (directed AUC 0.676) but
+  does not reconstruct the label. Note a **truncation asymmetry**: churned users
+  are counted over their whole (sub-24h) lifetime while retained users are
+  counted only over their first-24h slice, so churned users actually show a
+  *higher* mean count (37.4 vs 28.4). This is an honest within-window effect, not
+  post-window leakage — the count is time-boxed to the observation window (spec
+  §3) and is not a deterministic function of the label.
 
 **Conclusion:** H3 holds — the `cnt_*` features do not leak post-prediction-time
 information. The feature set is cleared; proceed to baselines (Task 10). No
