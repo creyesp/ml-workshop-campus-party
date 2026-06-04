@@ -57,6 +57,8 @@ DATA_HASHES: dict[str, str] = {
     "features_v2": "d07811a83dd04960808159052fc3f2f13f83cdbd3712389ddf533f36d6275aa2",
     # Session-level features v3 (data/queries/flood_it_features_v3_sessions.sql).
     "features_v3": "0969ed265b5d903b04782cd28adf9101d5c14f8bf6af5645810c161bbfdcd2df",
+    # Navigation-sequence features v4 (data/queries/flood_it_features_v4_navigation.sql).
+    "features_v4": "d652d10455fc2024cb7cd726d805cff2c7b6f90c790ef81a992d3c5a58126f6e",
 }
 
 # --- Feature set v2 --------------------------------------------------------
@@ -100,3 +102,27 @@ V3_DERIVED_SESSION = [
     "sess_engagement_early_frac",  # first-1h engagement / total engagement
 ]
 V3_NUMERICAL_COLUMNS = V2_NUMERICAL_COLUMNS + V3_RAW_SESSION + V3_DERIVED_SESSION
+
+# --- Feature set v4: navigation sequences (logical screen categories) -------
+# Screen classes mapped to platform-agnostic categories in BigQuery. Users with
+# no screen views in window (30 of train) get all-zero nav features.
+V4_RAW_NAV = [
+    "nav_screen_views",
+    "nav_distinct_categories",
+    "nav_transitions",
+    "nav_distinct_transitions",
+    "nav_self_loops",
+    "nav_cnt_game_over",
+    "nav_cnt_shop",
+    "nav_cnt_steps",
+    "nav_cnt_ad",
+    "nav_cnt_level_select",
+]
+V4_DERIVED_NAV = [
+    "nav_transition_rate",   # transitions / screen views
+    "nav_revisit_rate",      # self-loops / transitions
+    "nav_game_over_rate",    # game_over views / screen views
+    "nav_reached_shop",      # 1 if visited shop
+    "nav_reached_steps",     # 1 if hit out-of-steps/extra-steps
+]
+V4_NUMERICAL_COLUMNS = V3_NUMERICAL_COLUMNS + V4_RAW_NAV + V4_DERIVED_NAV
