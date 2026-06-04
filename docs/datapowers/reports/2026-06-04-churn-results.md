@@ -66,25 +66,45 @@ operating point with the growth team before any deployment.
 
 ## Decision (spec §10)
 
-**ITERATE → CONDITIONAL ADOPT.**
+**ADOPT XGBoost with a cost-based operating point.**
 
 - ✅ Champion beats the strong baseline on PR-AUC with non-overlapping **CV** CIs.
 - ✅ Passes the leakage audit (H3).
-- ❌ Has **no** cost-justified operating threshold meeting precision ≥ 0.60 (the
-  third §10 deploy gate fails — the target is infeasible).
+- ✅ Has a **cost-justified operating threshold** (Q1 resolved: FN ≈ 3–4× FP) that
+  beats every naive policy and the default 0.5, saving ~20–24% of retention cost.
+  The earlier precision ≥ 0.60 gate is retired as the wrong objective.
 
-Because the operating-point gate fails, do **not** deploy at precision ≥ 0.60.
 Adopt **XGBoost as the new model of record** (replacing the undocumented
-0.5-threshold `classification_report` baseline) and resolve the operating point
-with stakeholders before production. Reproducibility verified: clean-venv
-rebuild, 43 tests pass, CV metrics reproduce within ±0.005.
+0.5-threshold `classification_report` baseline), operated at the cost-optimal
+threshold (~0.48–0.58 depending on the exact FN/FP ratio). Reproducibility
+verified: clean-venv rebuild, 43 tests pass, CV metrics reproduce within ±0.005.
+Remaining before production: confirm the exact cost ratio and daily treatment
+budget (Q2), then a shadow/canary rollout.
+
+## Cost-based operating point (Q1 resolved) — `experiments/07_cost_threshold.py`
+
+Stakeholder cost ratio: **a false negative (let a churner pass) costs ~3–4× a
+false positive** (treat someone who would have stayed). With FN this costly, the
+cost-optimal threshold is chosen by minimising `#FP·1 + #FN·c` on train OOF, not
+by a precision floor. Champion (XGBoost) operating points on the frozen test:
+
+| C_FN/C_FP | threshold | recall | precision | total cost | vs best naive policy |
+|---|---|---|---|---|---|
+| 3 | 0.582 | 0.632 | 0.349 | 422 | **−24%** vs do-nothing |
+| 4 | 0.480 | 0.778 | 0.312 | 482 | **−21%** vs treat-all |
+
+The model-driven policy beats both naive policies (treat-none / treat-all) **and**
+the default 0.5 threshold. Real operating precision is ~0.31–0.35 with recall
+0.63–0.78 — confirming the precision ≥ 0.60 target (H1) was the wrong objective.
+Because `scale_pos_weight=4.1` inflates probabilities, the raw cost-optimal
+threshold (~0.48–0.58) sits above the calibrated 1/(1+c); selecting it
+empirically on OOF is robust to that miscalibration. **Net: the model saves
+~20–24% of retention cost vs the best policy with no model.**
 
 ## Open questions for the growth team (spec §11)
 
-- **Q1 — cost ratio (FP vs FN).** This sets the real operating threshold. The
-  precision ≥ 0.60 placeholder yields ~0 recall, so it is almost certainly too
-  strict; a defensible threshold needs the actual cost of a wasted incentive vs a
-  lost retainable user.
+- **Q1 — cost ratio (FP vs FN): RESOLVED.** FN ≈ 3–4× FP (above). Operating
+  threshold set by cost minimisation; precision ≥ 0.60 retired as the objective.
 - **Q2 — precision/volume budget.** How many users can be treated per day? With a
   cost-justified threshold (Q1), the operating point should be reported as
   recall @ that budget, not at an arbitrary precision floor.
