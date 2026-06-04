@@ -133,3 +133,9 @@ dmypy.json
 
 # PyCharm
 .idea/
+# floodit experiment env/artifacts
+.venv/
+mlruns/
+*.egg-info/
+__pycache__/
+.pytest_cache/
