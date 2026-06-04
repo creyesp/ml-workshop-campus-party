@@ -55,6 +55,8 @@ DATA_HASHES: dict[str, str] = {
     "raw": "300b88bb463166e5d4818a0b3284b0344b8ef181d0149d2f1b5b6f3105190cf0",
     # Engineered features v2 (data/queries/flood_it_features_v2.sql), keyed by user.
     "features_v2": "d07811a83dd04960808159052fc3f2f13f83cdbd3712389ddf533f36d6275aa2",
+    # Session-level features v3 (data/queries/flood_it_features_v3_sessions.sql).
+    "features_v3": "0969ed265b5d903b04782cd28adf9101d5c14f8bf6af5645810c161bbfdcd2df",
 }
 
 # --- Feature set v2 --------------------------------------------------------
@@ -78,3 +80,23 @@ V2_DERIVED_NUMERICAL = [
     "events_per_type",
 ]
 V2_NUMERICAL_COLUMNS = NUMERICAL_COLUMNS + V2_RAW_NUMERICAL + V2_DERIVED_NUMERICAL
+
+# --- Feature set v3: session-level (time-gap sessionization) ---------------
+# Derived in BigQuery (no ga_session_id in this export). min_to_second_session
+# null = never returned in window -> NEVER_SENTINEL; mean_intra_gap null = single
+# event -> 0.
+V3_RAW_SESSION = [
+    "sess_num_sessions",
+    "sess_events_per_session",
+    "sess_total_engagement_sec",
+    "sess_engagement_first_1h_sec",
+    "sess_mean_engagement_msec",
+    "sess_num_distinct_screens",
+    "sess_mean_intra_gap_s",
+    "sess_min_to_second_session",
+]
+V3_DERIVED_SESSION = [
+    "sess_returned",            # 1 if >=2 sessions in window
+    "sess_engagement_early_frac",  # first-1h engagement / total engagement
+]
+V3_NUMERICAL_COLUMNS = V2_NUMERICAL_COLUMNS + V3_RAW_SESSION + V3_DERIVED_SESSION
