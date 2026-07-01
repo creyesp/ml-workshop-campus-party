@@ -1,7 +1,7 @@
 [project]
-name = "workspace"
+name = "churn-pipeline"
 version = "0.1.0"
-description = "Add your description here"
+description = "Churn prediction pipeline - from notebook to production"
 readme = "README.md"
 requires-python = ">=3.9,<3.14"
 dependencies = [
@@ -15,11 +15,32 @@ dependencies = [
     "numpy>=2.0.2",
     "optuna>=4.9.0",
     "pandas>=2.3.3",
-    "pandas-profiling[notebook]>=3.6.6",
     "pyarrow>=21.0.0",
     "scikit-learn>=1.6.1",
     "seaborn>=0.13.2",
     "shap>=0.49.1",
     "widgetsnbextension>=4.0.15",
     "xgboost>=2.1.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.9.0",
+]
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.20",
 ]
