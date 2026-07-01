@@ -1,0 +1,25 @@
+# Excluye archivos innecesarios del contexto de build de Docker
+.git
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+
+# Notebooks exploratorios (no son parte del paquete de producción)
+notebooks/
+
+# Datos — se montan en runtime con -v, no se incluyen en la imagen
+data/
+
+# Artefactos de corridas anteriores
+artifacts/
+models/
+
+# Archivos de desarrollo y testing
+tests/
+docs/
+images/
+extras/
+binder/
+*.md
