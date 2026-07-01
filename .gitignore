@@ -133,3 +133,7 @@ dmypy.json
 
 # PyCharm
 .idea/
+# floodit_churn: outputs de batch scoring (regenerables)
+/preds.csv
+preds_*.csv
+*.preds.csv

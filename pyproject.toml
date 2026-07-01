@@ -1,7 +1,7 @@
 [project]
-name = "workspace"
-version = "0.1.0"
-description = "Add your description here"
+name = "floodit-churn"
+version = "1.0.0"
+description = "Flood-It churn model (XGBoost) — batch scoring package"
 readme = "README.md"
 requires-python = ">=3.9,<3.14"
 dependencies = [
@@ -23,3 +23,32 @@ dependencies = [
     "widgetsnbextension>=4.0.15",
     "xgboost>=2.1.4",
 ]
+
+[project.scripts]
+floodit-train = "floodit_churn.cli:train_cmd"
+floodit-score = "floodit_churn.cli:score_cmd"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/floodit_churn"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff",
+    "mypy",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true

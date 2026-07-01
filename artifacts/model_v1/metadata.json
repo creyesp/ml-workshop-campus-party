@@ -1,0 +1,42 @@
+{
+  "package_version": "1.0.0",
+  "created_at": "2026-07-01T22:43:46.084858+00:00",
+  "sklearn_version": "1.9.0",
+  "xgboost_version": "3.3.0",
+  "feature_columns": [
+    "country_name",
+    "device_os",
+    "device_lang",
+    "cnt_user_engagement",
+    "cnt_level_start_quickplay",
+    "cnt_level_end_quickplay",
+    "cnt_level_complete_quickplay",
+    "cnt_level_reset_quickplay",
+    "cnt_post_score",
+    "cnt_spend_virtual_currency",
+    "cnt_ad_reward",
+    "cnt_challenge_a_friend",
+    "cnt_completed_5_levels",
+    "cnt_use_extra_steps"
+  ],
+  "hyperparams": {
+    "random_state": 42,
+    "eval_metric": "logloss",
+    "objective": "binary:logistic"
+  },
+  "default_threshold": 0.5,
+  "train_csv": "/workspace/data/users_train.csv",
+  "train_sha256": "1dea2802d7db3fafa823e9a904ed1b569635d7911807039b7382245d7008ce14",
+  "n_train": 7190,
+  "test_csv": "/workspace/data/users_test.csv",
+  "test_sha256": "57a5adf560c50432caa13fb1a5a9fce913603e4fde77c2cb2ed889282b9723bb",
+  "n_test": 799,
+  "test_metrics": {
+    "roc_auc": 0.699423364732811,
+    "pr_auc": 0.37222300565765354,
+    "precision": 0.34048257372654156,
+    "recall": 0.6864864864864865,
+    "f1": 0.4551971326164875,
+    "threshold": 0.5
+  }
+}

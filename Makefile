@@ -1,4 +1,4 @@
-.PHONY: post-create install-extra-tools test-tools init sync lint format type-check gitignore freeze dev-tools ensure-ipykernel
+.PHONY: post-create install-extra-tools test-tools init sync lint format type-check gitignore freeze dev-tools ensure-ipykernel test train
 
 PYTHON_VERSION = 3.13
 
@@ -62,7 +62,15 @@ format:
 
 # Run mypy type checker
 type-check:
-	@uv run mypy .
+	@uv run mypy src
+
+# Run test suite
+test:
+	@uv run pytest
+
+# Reentrenar y congelar el modelo XGBoost ganador en artifacts/model_v1
+train:
+	@uv run floodit-train
 
 # Download Python .gitignore from GitHub
 gitignore:

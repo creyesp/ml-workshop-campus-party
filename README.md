@@ -40,3 +40,37 @@ This repository currently works best with Python 3.13 when installing dependenci
 	$ python3 -m pip install --user --upgrade -r requirements.txt
 	$ jupyter notebook
 
+# Uso productivo (paquete `floodit_churn`)
+
+La lógica del **modelo ganador (XGBoost)** se migró de los notebooks al paquete
+instalable `src/floodit_churn/` para batch scoring local reproducible. Ver el plan
+completo en [`docs/PLAN_MIGRACION_PRODUCCION.md`](docs/PLAN_MIGRACION_PRODUCCION.md).
+
+Instalar dependencias:
+
+	$ uv sync
+
+**Reentrenar y congelar el modelo** (genera `artifacts/model_v1/` con `metadata.json`):
+
+	$ uv run floodit-train
+	# o: make train
+
+**Batch scoring** de un CSV de usuarios a un CSV local de predicciones
+(`user_pseudo_id, churn_proba, churn_pred`). El umbral es configurable (default 0.5):
+
+	$ uv run floodit-score --input data/users_test.csv --output preds.csv
+	$ uv run floodit-score --input data/users_test.csv --output preds.csv --threshold 0.3
+
+**Calidad**:
+
+	$ make lint        # ruff
+	$ make type-check  # mypy
+	$ make test        # pytest
+
+Como librería:
+
+```python
+from floodit_churn.scoring import score_csv
+score_csv("data/users_test.csv", "artifacts/model_v1", "preds.csv", threshold=0.5)
+```
+
