@@ -133,3 +133,6 @@ dmypy.json
 
 # PyCharm
 .idea/
+# Artefactos por corrida (se conserva el placeholder para versionar el directorio)
+artifacts/*
+!artifacts/.gitkeep

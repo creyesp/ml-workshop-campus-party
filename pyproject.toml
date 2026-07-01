@@ -1,0 +1,41 @@
+[project]
+name = "churn-ml"
+version = "0.1.0"
+description = "Pipeline productivo de predicción de churn (Flood-It!) transformado desde notebooks."
+readme = "HOWTO.md"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "joblib>=1.3",
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "scikit-learn>=1.4",
+    "xgboost>=2.0",
+    "optuna>=3.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.5",
+    "pytest>=7.0",
+]
+
+[project.scripts]
+churn-train = "src.train.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["src", "src.config", "src.data", "src.features", "src.train"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
