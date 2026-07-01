@@ -10,6 +10,7 @@ xgboost
 lightgbm
 catboost
 google-cloud-bigquery
+pandas
 pyarrow
 pandas-profiling[notebook]
 optuna
