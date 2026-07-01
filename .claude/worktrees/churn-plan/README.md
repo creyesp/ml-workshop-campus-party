@@ -19,22 +19,6 @@ Install python 3.6+ in your own machine and clone this repository following next
 
 	$ git clone https://github.com/creyesp/ml-workshop-campus-party.git
 	$ cd ml-workshop-campus-party
-
-### Recommended setup with uv (Python 3.13)
-
-This repository currently works best with Python 3.13 when installing dependencies with `uv`.
-
-	$ uv python install 3.13
-	$ echo "3.13" > .python-version
-	$ uv add -r requirements.txt
-	$ uv run jupyter notebook
-
-**Note**: Python 3.14 may fail when resolving/installing `shap` because of a transitive `llvmlite` build issue.
-
-### Alternative setup with virtualenv
-
-	$ git clone https://github.com/creyesp/ml-workshop-campus-party.git
-	$ cd ml-workshop-campus-party
 	$ virtualenv --python=python3.8 venv
 	$ source venv/bin/activate
 	$ python3 -m pip install --user --upgrade -r requirements.txt
