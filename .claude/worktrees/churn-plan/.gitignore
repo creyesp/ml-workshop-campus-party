@@ -133,15 +133,10 @@ dmypy.json
 
 # PyCharm
 .idea/
-
-# ── Pipeline ML ──────────────────────────────────────────────────────────────
-# Artefactos versionados por corrida (modelos, métricas, plots)
-artifacts/
-
-# Directorio de modelos registrados como "latest"
-models/
-
-# Archivos de predicciones generadas en inferencia
-data/*_output.csv
-data/*_predictions.csv
-data/users_not_yet.csv
+# floodit experiment env/artifacts
+.venv/
+mlruns/
+*.egg-info/
+__pycache__/
+.pytest_cache/
+catboost_info/

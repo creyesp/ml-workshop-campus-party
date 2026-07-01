@@ -1,0 +1,29 @@
+{
+  "name": "Python + uv",
+  "dockerComposeFile": "./docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/uv:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-python.mypy-type-checker",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "PROJECT_NAME": "Python + uv",
+    "PYTHON_VERSION": "3.13",
+    "UV_INIT_BARE": "false",
+    "INSTALL_IPYKERNEL": "true"
+  },
+  "postCreateCommand": "make post-create",
+  "mounts": []
+}

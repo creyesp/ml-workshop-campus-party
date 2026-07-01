@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    image: python_playground
+    container_name: python_playground
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity

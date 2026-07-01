@@ -1,0 +1,54 @@
+[project]
+name = "ml-churn-pipeline"
+version = "0.1.0"
+description = "Pipeline de ML modular para predicción de churn, con CLI, HPO y registro de artefactos por corrida."
+readme = "README.md"
+requires-python = ">=3.9,<3.14"
+dependencies = [
+    "catboost>=1.2.10",
+    "google-cloud-bigquery>=3.41.0",
+    "ipywidgets>=8.1.8",
+    "lightgbm>=4.6.0",
+    "matplotlib>=3.9.4",
+    "mlserver>=1.7.1",
+    "notebook>=7.5.7",
+    "numpy>=2.0.2",
+    "optuna>=4.9.0",
+    "pandas>=2.3.3",
+    "pandas-profiling[notebook]>=3.6.6",
+    "pyarrow>=21.0.0",
+    "scikit-learn>=1.6.1",
+    "seaborn>=0.13.2",
+    "shap>=0.49.1",
+    "widgetsnbextension>=4.0.15",
+    "xgboost>=2.1.4",
+]
+
+[project.scripts]
+# Permite ejecutar `ml-pipeline train ...` directamente (sin python -m)
+ml-pipeline = "src.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.15.20",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: pyflakes, I: isort, UP: pyupgrade
+select = ["E", "W", "F", "I", "UP"]
+ignore = [
+    "E501",   # líneas largas: controlado por el formatter
+    "UP007",  # usar X | Y en vez de Optional[X] — no requerido aún
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
