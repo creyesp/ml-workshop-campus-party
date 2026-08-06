@@ -2,3 +2,4 @@
 set -e
 
 exec "$@"
+jupyter nbextension enable --py widgetsnbextension
